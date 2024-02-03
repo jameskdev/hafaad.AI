@@ -1,0 +1,45 @@
+<resources>
+    <!-- Reply Preference -->
+    <string-array name="clip_guidance_item_list">
+        <item>NONE</item>
+        <item>FAST_BLUE</item>
+        <item>FAST_GREEN</item>
+        <item>SIMPLE</item>
+        <item>SLOW</item>
+        <item>SLOWER</item>
+        <item>SLOWEST</item>
+    </string-array>
+    <string-array name="sampler_item_list">
+        <item>AUTO</item>
+        <item>DDIM</item>
+        <item>DDPM</item>
+        <item>K_DPMPP_2M</item>
+        <item>K_DPMPP_2S_ANCESTRAL</item>
+        <item>K_DPM_2</item>
+        <item>K_DPM_2_ANCESTRAL</item>
+        <item>K_EULER</item>
+        <item>K_EULER_ANCESTRAL</item>
+        <item>K_HEUN</item>
+        <item>K_LMS</item>
+    </string-array>
+    <string-array name="style_preset_item_list">
+        <item>auto</item>
+        <item>3d-model</item>
+        <item>analog-film</item>
+        <item>anime</item>
+        <item>cinematic</item>
+        <item>comic-book</item>
+        <item>digital-art</item>
+        <item>enhance</item>
+        <item>fantasy-art</item>
+        <item>isometric</item>
+        <item>line-art</item>
+        <item>low-poly</item>
+        <item>modeling-compound</item>
+        <item>neon-punk</item>
+        <item>origami</item>
+        <item>photographic</item>
+        <item>pixel-art</item>
+        <item>tile-texture</item>
+    </string-array>
+</resources>

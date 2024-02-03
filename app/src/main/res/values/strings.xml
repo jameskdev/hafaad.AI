@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">hafad.AI</string>
+    <string name="prompt_txt_box_hint">Enter your prompt here</string>
+    <string name="request_btn">Submit your prompt</string>
+    <string name="main_btn">Generate Images</string>
+    <string name="open_settings_btn">Open settings</string>
+    <string name="save_img_btn">Save Image</string>
+
+    <!-- Preference Titles -->
+    <string name="generic_settings_header">Generic Settings</string>
+    <string name="ai_img_settings_header">AI Image Settings</string>
+
+    <!-- Messages Preferences -->
+    <string name="api_key_title">API key</string>
+    <string name="cfg_scale_pref_title">CFG Scale</string>
+    <string name="clip_guidance_preset_pref_title">Clip Guidance Preset</string>
+    <string name="sampler_pref_title">Sampler</string>
+    <string name="no_of_samples_pref_title">Number of samples</string>
+    <string name="seed_pref_title">Seed</string>
+    <string name="steps_pref_title">Steps</string>
+    <string name="style_preset_pref_title">Style</string>
+</resources>
