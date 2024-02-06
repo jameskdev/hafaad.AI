@@ -12,11 +12,10 @@ public class AEViewModel extends ViewModel implements AECallback {
     private final MutableLiveData<AEJobStatus> aeStatus = new MutableLiveData<>(new AEJobStatus(0, false, 0, "", false));
     private final HandlerThread mGenThr;
     private final StabImageGenerator mGen;
-    private int currentImgPos = -1;
-    private String currentPrompt = "";
     public LiveData<AEJobStatus> getAEStatus() {
         return aeStatus;
     }
+    private final ArrayList<String> imgItems = new ArrayList<>();
 
     @Override
     protected void onCleared() {
@@ -47,6 +46,14 @@ public class AEViewModel extends ViewModel implements AECallback {
         return mGen.getImage(idx);
     }
 
+    public ArrayList<String> getImgItemsList() {
+        return imgItems;
+    }
+
+    public long[] getAllImgSeeds() {
+        return mGen.getAllSeeds();
+    }
+
     public void clearImages() {
         mGen.clearImages();
     }
@@ -57,21 +64,5 @@ public class AEViewModel extends ViewModel implements AECallback {
 
     public boolean saveImage(String fn, int idx) {
         return mGen.saveImage(fn, idx);
-    }
-
-    public int getCurrentImgPos() {
-        return currentImgPos;
-    }
-
-    public void setCurrentImgPos(int inCurrentImgPos) {
-        currentImgPos = inCurrentImgPos;
-    }
-
-    public void setCurrentPrompt(String inCurrentPrompt) {
-        currentPrompt = inCurrentPrompt;
-    }
-
-    public String getCurrentPrompt() {
-        return currentPrompt;
     }
 }

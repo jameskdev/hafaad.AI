@@ -1,5 +1,6 @@
 package com.xm.aeclient;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -8,6 +9,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -24,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,49 +44,40 @@ import java.util.Base64;
 
 public class MainActivity extends AppCompatActivity {
     AEViewModel avm;
+    ViewPager2 mViewPager;
+    TabLayout mTl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ((TabLayout) findViewById(R.id.top_tabs)).addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        avm = new ViewModelProvider(this).get(AEViewModel.class);
+        mViewPager = (ViewPager2) findViewById(R.id.frag_pager);
+        mTl = findViewById(R.id.top_tabs);
+        mViewPager.setAdapter(new FragmentStateAdapter(this) {
+
             @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                Log.e("AEClient", "Settings clicked");
-                if (tab.getPosition() == 1) {
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.pref_container, new AppSettings())
-                            .setReorderingAllowed(true)
-                            .commit();
+            public int getItemCount() {
+                return 2;
+            }
+
+            @NonNull
+            @Override
+            public Fragment createFragment(int position) {
+                if (position == 0) {
+                    return new ImageGeneratorFragment();
+                } else if (position == 1) {
+                    return new AppSettings();
                 } else {
-                    Log.e("AEClient", "onClickMain");
-                    getSupportFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.pref_container, new ImageGeneratorFragment())
-                            .setReorderingAllowed(true)
-                            .commit();
+                    Log.wtf("MainActivity", "Unknown fragment position received!");
+                    throw new RuntimeException("Unknown Fragment ID");
                 }
             }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
         });
-        avm = new ViewModelProvider(this).get(AEViewModel.class);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.pref_container, new ImageGeneratorFragment())
-                    .setReorderingAllowed(true)
-                    .commit();
-        }
+        new TabLayoutMediator(mTl, mViewPager,
+                (tab, position) -> {if (position == 0) {tab.setText(R.string.main_btn);}
+                else {tab.setText(R.string.open_settings_btn);}}
+        ).attach();
     }
 
 

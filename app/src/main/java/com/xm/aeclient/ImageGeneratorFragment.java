@@ -4,11 +4,13 @@ import android.content.DialogInterface;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
 import android.util.Log;
@@ -25,9 +27,12 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 
-public class ImageGeneratorFragment extends Fragment {
+public class ImageGeneratorFragment extends Fragment implements SelectListAdapter.SelectListListener {
     private static final String LOG_TAG = "ImageGeneratorFragment";
+    private ArrayList<String> imgItems;
     AEViewModel avm;
+    private int currentImgPos = -1;
+    private ImageView mMainImageView;
 
     public ImageGeneratorFragment() {
     }
@@ -49,6 +54,10 @@ public class ImageGeneratorFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v =  inflater.inflate(R.layout.fragment_image_generator, container, false);
         avm = new ViewModelProvider(requireActivity()).get(AEViewModel.class);
+        imgItems = avm.getImgItemsList();
+        mMainImageView = ((ImageView) v.findViewById(R.id.show_image));
+        SelectListAdapter sel = new SelectListAdapter(imgItems, this);
+        ((RecyclerView) v.findViewById(R.id.ilist_view_res_sel)).setAdapter(sel);
         View.OnClickListener ocl = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -83,11 +92,17 @@ public class ImageGeneratorFragment extends Fragment {
 
             public void onClickSaveBtn() {
                 boolean res = false;
+                if (currentImgPos == -1) {
+                    Toast.makeText(requireContext(),
+                            "No images have been generated yet, so nothing to save!",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 try {
                     String mPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).
                             getCanonicalPath() + "/" + String.valueOf(LocalDateTime.now().
                             toEpochSecond(ZoneOffset.UTC)) + ".png";
-                    res = avm.saveImage(mPath, 0);
+                    res = avm.saveImage(mPath, currentImgPos);
                     if (!res) {
                         Toast.makeText(requireContext(), "Error occurred while saving file!",
                                 Toast.LENGTH_SHORT).show();
@@ -100,7 +115,6 @@ public class ImageGeneratorFragment extends Fragment {
                             Toast.LENGTH_SHORT).show();
                 }
             }
-
         };
 
         avm.getAEStatus().observe(getViewLifecycleOwner(), aeJobStatus -> {
@@ -111,17 +125,18 @@ public class ImageGeneratorFragment extends Fragment {
             }
             if (aeJobStatus.isImgChanged()) {
                 if(aeJobStatus.getNumOfImages() == 0) {
-                    ((ImageView) v.findViewById(R.id.show_image)).setImageDrawable(AppCompatResources.getDrawable(requireContext(),
-                            R.drawable.ic_launcher_background));
-                    avm.setCurrentImgPos(-1);
+                    imgItems.clear();
+                    setCurrentImgPos(-1);
                 } else {
-                    ((ImageView) v.findViewById(R.id.show_image)).
-                            setImageBitmap(BitmapFactory.decodeByteArray(avm.getImage(0).getImageData(),
-                                    0, avm.getImage(0).getImageData().length));
-                    avm.setCurrentImgPos(0);
+                    long[] imgListSeeds = avm.getAllImgSeeds();
+                    for (int i = 0; i < aeJobStatus.getNumOfImages(); i++) {
+                        imgItems.add("Image " + String.valueOf(i + 1) + ": Seed [" +
+                                String.valueOf(imgListSeeds[i]) + "]");
+                    }
+                    setCurrentImgPos(0);
                 }
                 if (!aeJobStatus.isCurrentlyAtWork()) {
-                    avm.ackResult();
+                    sel.notifyDataSetChanged();
                 }
             }
             if (!aeJobStatus.getResMessage().isEmpty()) {
@@ -141,24 +156,48 @@ public class ImageGeneratorFragment extends Fragment {
                             }).create().show();
                 }
             }
+            if (!aeJobStatus.isCurrentlyAtWork()) {
+                avm.ackResult();
+            }
         });
 
         ((Button) v.findViewById(R.id.submit_btn)).setOnClickListener(ocl);
         ((Button) v.findViewById(R.id.save_img_button)).setOnClickListener(ocl);
-        ((EditText) v.findViewById(R.id.prompt_textbox)).setText(avm.getCurrentPrompt());
-        if (avm.getCurrentImgPos() > -1) {
-            ((ImageView) v.findViewById(R.id.show_image)).
-                    setImageBitmap(BitmapFactory.decodeByteArray(avm.getImage(avm.getCurrentImgPos()).getImageData(),
-                            0, avm.getImage(0).getImageData().length));
+
+        if (savedInstanceState != null) {
+            setCurrentImgPos(savedInstanceState.getInt("currentImgPos", -1));
         }
 
         return v;
     }
 
+    public void setCurrentImgPos(int paramIdx) {
+        if (paramIdx == -1) {
+            mMainImageView.setImageDrawable(AppCompatResources.getDrawable(requireContext(),
+                    R.drawable.ic_launcher_background));
+            currentImgPos = -1;
+            return;
+        }
+
+        StabImageData sd = avm.getImage(paramIdx);
+        if (sd != null) {
+            mMainImageView.setImageBitmap(BitmapFactory.decodeByteArray(sd.getImageData(),
+                            0, sd.getImageData().length));
+            currentImgPos = paramIdx;
+        } else {
+            Log.e(LOG_TAG, "Image " + paramIdx + "is null!");
+        }
+    }
+
     @Override
-    public void onPause() {
-        super.onPause();
-        avm.setCurrentPrompt(((EditText)requireView().findViewById(R.id.prompt_textbox)).
-                getText().toString());
+    public void listItemSelected(View v, int position) {
+        setCurrentImgPos(position);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("currentImgPos", currentImgPos);
+        Log.e(LOG_TAG, "onSaveInstanceState");
     }
 }

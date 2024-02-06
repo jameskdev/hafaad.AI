@@ -38,14 +38,18 @@
         android:id="@+id/submit_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="changeImg"
         android:text="@string/request_btn" />
 
     <Button
         android:id="@+id/save_img_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onClickSaveBtn"
         android:text="@string/save_img_btn" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/ilist_view_res_sel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="LinearLayoutManager" />
 
 </LinearLayout>

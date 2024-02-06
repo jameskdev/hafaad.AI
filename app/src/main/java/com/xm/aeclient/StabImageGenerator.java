@@ -185,6 +185,19 @@ public class StabImageGenerator extends Handler {
         }
     }
 
+    public long[] getAllSeeds() {
+        synchronized(imgListInUse) {
+            if (imgList.size() == 0) {
+                return null;
+            }
+            long[] mSeeds = new long[imgList.size()];
+            for (int i = 0; i < imgList.size(); i++) {
+                mSeeds[i] = imgList.get(i).getSeed();
+            }
+            return mSeeds;
+        }
+    }
+
     public void clearImages() {
         synchronized(imgListInUse) {
             imgList.clear();
