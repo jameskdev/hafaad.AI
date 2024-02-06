@@ -33,6 +33,7 @@ public class ImageGeneratorFragment extends Fragment implements SelectListAdapte
     AEViewModel avm;
     private int currentImgPos = -1;
     private ImageView mMainImageView;
+    private RecyclerView mImgListRecView;
 
     public ImageGeneratorFragment() {
     }
@@ -56,8 +57,9 @@ public class ImageGeneratorFragment extends Fragment implements SelectListAdapte
         avm = new ViewModelProvider(requireActivity()).get(AEViewModel.class);
         imgItems = avm.getImgItemsList();
         mMainImageView = ((ImageView) v.findViewById(R.id.show_image));
+        mImgListRecView = ((RecyclerView) v.findViewById(R.id.ilist_view_res_sel));
         SelectListAdapter sel = new SelectListAdapter(imgItems, this);
-        ((RecyclerView) v.findViewById(R.id.ilist_view_res_sel)).setAdapter(sel);
+        mImgListRecView.setAdapter(sel);
         View.OnClickListener ocl = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -135,9 +137,7 @@ public class ImageGeneratorFragment extends Fragment implements SelectListAdapte
                     }
                     setCurrentImgPos(0);
                 }
-                if (!aeJobStatus.isCurrentlyAtWork()) {
-                    sel.notifyDataSetChanged();
-                }
+                sel.notifyDataSetChanged();
             }
             if (!aeJobStatus.getResMessage().isEmpty()) {
                 if (aeJobStatus.getIsError() == 0) {
