@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">hafad.AI</string>
+    <string name="app_name">hafaad.AI</string>
     <string name="prompt_txt_box_hint">Enter your prompt here</string>
     <string name="request_btn">Submit your prompt</string>
     <string name="main_btn">Generate Images</string>
