@@ -18,8 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -32,7 +30,7 @@ public class ImageGeneratorFragment extends Fragment implements SelectListAdapte
     private ArrayList<String> imgItems;
     AEViewModel avm;
     private int currentImgPos = -1;
-    private ImageView mMainImageView;
+    private ImageViewWithZoom mMainImageView;
     private RecyclerView mImgListRecView;
 
     public ImageGeneratorFragment() {
@@ -56,7 +54,7 @@ public class ImageGeneratorFragment extends Fragment implements SelectListAdapte
         View v =  inflater.inflate(R.layout.fragment_image_generator, container, false);
         avm = new ViewModelProvider(requireActivity()).get(AEViewModel.class);
         imgItems = avm.getImgItemsList();
-        mMainImageView = ((ImageView) v.findViewById(R.id.show_image));
+        mMainImageView = ((ImageViewWithZoom) v.findViewById(R.id.show_image));
         mImgListRecView = ((RecyclerView) v.findViewById(R.id.ilist_view_res_sel));
         SelectListAdapter sel = new SelectListAdapter(imgItems, this);
         mImgListRecView.setAdapter(sel);
